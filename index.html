@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cifrado de Hill - Web Algebra</title>
+    <title>Cifrado de Hill - Álgebra Lineal</title>
+    <meta name="description" content="Implementación del Cifrado de Hill usando álgebra lineal y matrices mod 26. Cifra y descifra mensajes directamente en el navegador.">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="main-container">
         <header>
@@ -16,58 +19,111 @@
                 </div>
                 <h1>Cifrado de Hill</h1>
             </div>
-            <p>Arquitectura Cliente / Servidor en Java Nativo</p>
+            <p>Álgebra Lineal aplicada — Multiplicación de matrices mod 26</p>
         </header>
 
         <main class="dashboard">
+
+            <!-- ── Card 1: Matriz clave ── -->
             <section class="card config-card">
                 <h2>1. Matriz Clave Interactiva</h2>
-                <p class="subtitle">Inserta los 4 números matemáticos que componen tu llave de acceso a la tabla.</p>
+                <p class="subtitle">Inserta los 4 valores que forman tu llave 2×2. El determinante debe ser coprimo con 26.</p>
                 <div class="matrix-input">
                     <div class="row">
-                        <input type="number" id="m00" value="3" placeholder="00">
-                        <input type="number" id="m01" value="3" placeholder="01">
+                        <input type="number" id="m00" value="3" placeholder="a">
+                        <input type="number" id="m01" value="3" placeholder="b">
                     </div>
                     <div class="row">
-                        <input type="number" id="m10" value="2" placeholder="10">
-                        <input type="number" id="m11" value="5" placeholder="11">
+                        <input type="number" id="m10" value="2" placeholder="c">
+                        <input type="number" id="m11" value="5" placeholder="d">
                     </div>
                 </div>
-                <div id="status-badge" class="badge">A simple vista: Matriz pendiente</div>
+                <div id="status-badge" class="badge">Validando clave...</div>
+
+                <!-- ── Claves recomendadas ── -->
+                <div class="presets-section">
+                    <p class="presets-title">
+                        <span class="icon-tip">💡</span>
+                        Claves recomendadas
+                        <span class="tooltip-wrap">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">
+                                Con números grandes el determinante mod 26 puede no ser coprimo con 26
+                                (divisible por 2 o por 13), haciendo la llave inválida. Estas claves
+                                siempre funcionan porque sus determinantes son 1, 9, 23 o 25 — todos
+                                coprimos con 26.
+                            </span>
+                        </span>
+                    </p>
+                    <div class="presets-grid">
+                        <button class="preset-btn" onclick="cargarClave(3,3,2,5)">
+                            <span class="preset-label">Clave A</span>
+                            <span class="preset-matrix">[[3,3],[2,5]]</span>
+                            <span class="preset-det">det=9</span>
+                        </button>
+                        <button class="preset-btn" onclick="cargarClave(1,2,3,5)">
+                            <span class="preset-label">Clave B</span>
+                            <span class="preset-matrix">[[1,2],[3,5]]</span>
+                            <span class="preset-det">det=25</span>
+                        </button>
+                        <button class="preset-btn" onclick="cargarClave(2,1,5,3)">
+                            <span class="preset-label">Clave C</span>
+                            <span class="preset-matrix">[[2,1],[5,3]]</span>
+                            <span class="preset-det">det=1</span>
+                        </button>
+                        <button class="preset-btn" onclick="cargarClave(11,8,3,7)">
+                            <span class="preset-label">Clave D</span>
+                            <span class="preset-matrix">[[11,8],[3,7]]</span>
+                            <span class="preset-det">det=1</span>
+                        </button>
+                    </div>
+                </div>
             </section>
 
+            <!-- ── Card 2: Mensaje ── -->
             <section class="card logic-card">
-                <h2>2. Mensaje Crudo</h2>
-                <p class="subtitle">Escribe tu texto acá, el backend purificará y convertirá cada bloque al vector equivalente.</p>
+                <h2>2. Mensaje a Procesar</h2>
+                <p class="subtitle">Escribe tu texto. Solo se usarán letras A–Z; el algoritmo rellena con X si el largo es impar.</p>
                 <textarea id="txtMensaje" placeholder="Ejemplo: HOLA MUNDO" rows="3"></textarea>
-                
+
                 <div class="actions">
-                    <button class="btn btn-primary" onclick="procesarJava('cifrar')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                    <button class="btn btn-primary" onclick="procesarMensaje('cifrar')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                            </path>
+                        </svg>
                         Cifrar Mensaje
                     </button>
-                    <button class="btn btn-secondary" onclick="procesarJava('descifrar')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <button class="btn btn-secondary" onclick="procesarMensaje('descifrar')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
                         Descifrar Mensaje
                     </button>
                 </div>
             </section>
 
+            <!-- ── Card 3: Resultado ── -->
             <section class="card result-card">
-                <h2>3. Resultado del Servidor Java</h2>
+                <h2>3. Resultado del Algoritmo</h2>
                 <div class="result-box" id="cajaResultado">
-                    <p class="placeholder">Esperando petición HTTP POST hacia localhost:8080...</p>
+                    <p class="placeholder">Esperando petición ...</p>
                 </div>
                 <div class="log-overlay" id="logText">...</div>
             </section>
         </main>
-        
+
         <footer>
-            Separación de responsabilidades: Álgebra Lineal &mdash; Backend Java / Frontend HTML
+            Separación de responsabilidades &mdash; Álgebra Lineal: hillMath.js (lógica) / app.js (UI)
         </footer>
     </div>
-    
+
     <script src="hillMath.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>

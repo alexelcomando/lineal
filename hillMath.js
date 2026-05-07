@@ -1,4 +1,4 @@
-// Algoritmo de Cifrado de Hill
+
 
 const modulo = (valor, base) => {
     let resultado = valor % base;
@@ -28,17 +28,16 @@ const validarMatriz = (a, b, c, d) => {
     let determinante = (a * d) - (b * c);
     let detMod = modulo(determinante, 26);
 
-    if (detMod === 0) return "Determinante nulo osea que (mod 26).";
-    if (gcd(detMod, 26) !== 1) return "Determinante y módulo no son coprimos.";
+    if (detMod === 0) return { ok: false, msg: "El determinante es 0 (mod 26). La matriz no es invertible." };
+    if (gcd(detMod, 26) !== 1) return { ok: false, msg: `Det = ${detMod} no es coprimo con 26. Usa una clave recomendada.` };
 
-    return "Todo esta bien mi vale (att: carlos guerrero)";
+    return { ok: true, msg: `Det = ${determinante} → ${detMod} (mod 26). Clave válida.` };
 };
 
 const calcularMatrizInversa = (a, b, c, d) => {
     let strDeterminante = (a * d) - (b * c);
     let invMultiplicativo = inversoMultiplicativo(modulo(strDeterminante, 26), 26);
 
-    // Matriz adjunta modulada
     let invA = modulo(d * invMultiplicativo, 26);
     let invB = modulo(-b * invMultiplicativo, 26);
     let invC = modulo(-c * invMultiplicativo, 26);
@@ -86,7 +85,6 @@ const cifrarMensaje = (mensaje, a, b, c, d) => {
         let v1 = numeros[i];
         let v2 = numeros[i + 1];
 
-        // Multiplica la matriz clave por el vector del texto local
         resultados.push(modulo((a * v1) + (b * v2), 26));
         resultados.push(modulo((c * v1) + (d * v2), 26));
     }
@@ -105,7 +103,6 @@ const descifrarMensaje = (mensaje, a, b, c, d) => {
         let v1 = numeros[i];
         let v2 = numeros[i + 1];
 
-        // Multiplica la matriz inversa por el criptograma
         resultados.push(modulo((invA * v1) + (invB * v2), 26));
         resultados.push(modulo((invC * v1) + (invD * v2), 26));
     }
