@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -245,19 +244,11 @@
             margin: 10px 0;
         }
 
-        .info {
-            background: #3498db;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
             }
-
+            
             .sidebar {
                 width: 100%;
                 max-height: none;
@@ -265,7 +256,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="header">
         <h1>Editor Inteligente de Imágenes</h1>
@@ -284,7 +274,7 @@
 
             <div class="section">
                 <h3>🔄 Transformaciones Geométricas</h3>
-
+                
                 <div class="control-group">
                     <label for="rotationSlider">Rotación: <span id="rotationValue">0°</span></label>
                     <input type="range" id="rotationSlider" min="-180" max="180" value="0" step="1">
@@ -330,11 +320,13 @@
                 <button class="btn" onclick="showMatrixView()">Ver Matriz de Píxeles</button>
                 <button class="btn" onclick="showTransformationMatrix()">Matriz de Transformación</button>
                 <button class="btn" onclick="compareImages()">Comparar Imágenes</button>
+                <button class="btn" onclick="applySVDCompression()">Compresión SVD</button>
             </div>
 
             <div class="section">
                 <h3>💾 Guardar Resultados</h3>
                 <button class="btn" onclick="saveImage()">Guardar Imagen</button>
+                <button class="btn" onclick="exportMatrix()">Exportar Matriz</button>
             </div>
         </div>
 
@@ -364,8 +356,5 @@
             <div id="statusMessage"></div>
         </div>
     </div>
-
-    <script src="src/main-hq-final.js"></script>
 </body>
-
 </html>
